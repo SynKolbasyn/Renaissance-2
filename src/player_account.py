@@ -39,15 +39,17 @@ class Player:
     def check_location(self, location: str) -> bool:
         return location == self.location
 
+    def action_movement(self, action) -> str:
+        if self.check_location(ACTIONS[action]["location_arrive"]):
+            return "You are already here or you can't go there"
+        self.previous_locations.append(self.location)
+        self.location = ACTIONS[action]["location_arrive"]
+        return ACTIONS[action]["description"]
+
     def perform_action(self, action: str) -> str:
         answer = ""
         if ACTIONS[action]["type"] == "movement":
-            if self.check_location(ACTIONS[action]["location_arrive"]):
-                answer += "You are already here"
-            else:
-                self.previous_locations.append(self.location)
-                self.location = ACTIONS[action]["location_arrive"]
-                answer += ACTIONS[action]["description"]
+            answer += self.action_movement(action)
         self.update_data()
         return answer
 
