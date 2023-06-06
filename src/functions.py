@@ -17,7 +17,7 @@ ITEMS = get_dict_from_json("../game_data/items.json")
 
 def create_new_player(identification_number: int, login: str, name: str) -> player_account.Player:
     player = player_account.Player(identification_number, login, name, {"location": "Forest", "status": "Stay"}, [],
-                                   100, 1, 0, {}, {})
+                                   100, 1, 0, 0, LOCATIONS["Forest"]["actions"], {}, {})
     player.update_data()
     return player
 
@@ -26,8 +26,8 @@ def create_exist_player(identification_number: int) -> player_account.Player:
     player_data = get_dict_from_json(f"../players_data_base/{identification_number}.json")
     return player_account.Player(identification_number, player_data["login"], player_data["name"],
                                  player_data["location"], player_data["previous_locations"], player_data["hp"],
-                                 player_data["damage"], player_data["experience"], player_data["enemies"],
-                                 player_data["inventory"])
+                                 player_data["damage"], player_data["experience"], player_data["money"],
+                                 player_data["buttons"], player_data["enemies"], player_data["inventory"])
 
 
 def except_new_player(identification_number: int, login: str, name: str) -> player_account.Player:
@@ -36,7 +36,7 @@ def except_new_player(identification_number: int, login: str, name: str) -> play
     return create_new_player(identification_number, login, name)
 
 
-def is_action_correct(action: str) -> int:
+def is_action_correct(action: str) -> bool:
     return action in ACTIONS.keys()
 
 
