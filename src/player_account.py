@@ -1,4 +1,5 @@
 import ujson
+import random
 
 
 def get_dict_from_json(file_name: str) -> dict:
@@ -40,6 +41,20 @@ class Player:
             "inventory": self.inventory
         }
 
+    def info(self) -> str:
+        return f"ID: {self.identification_number}\n" \
+               f"Name: {self.name}\n" \
+               f"Location: {self.location}\n" \
+               f"HP: {self.hp}\n" \
+               f"Damage: {self.damage}\n" \
+               f"Experience: {self.experience}"
+
+    def inventory_info(self) -> str:
+        info = ""
+        for item_name in self.inventory:
+            info += f"{item_name}: {self.inventory[item_name]}\n"
+        return info
+
     def update_data(self):
         with open(f"../players_data_base/{self.identification_number}.json", "w") as file:
             file.write(ujson.dumps(self.get_dict_format_data(), indent=2))
@@ -47,7 +62,7 @@ class Player:
     def check_location(self, location: str) -> bool:
         return location == self.location
 
-    def action_movement(self, action) -> str:
+    def action_movement(self, action: str) -> str:
         if action == "Leave":
             self.location = self.previous_locations[-1]
             self.previous_locations.pop(-1)
@@ -58,14 +73,21 @@ class Player:
         self.location = ACTIONS[action]["location_arrive"]
         return ACTIONS[action]["description"]
 
-    def check_enemy(self, enemy_name):
+    def check_enemy(self, enemy_name: str):
         if enemy_name not in self.enemies.keys():
-            self.enemies[enemy_name] = NPC_DATA[enemy_name]
+            self.enemies[enemy_name] = NPC_DATA[enemy_name].copy()
 
-    def beat_enemy(self, enemy_name) -> str:
+    def get_drop_from_enemy(self, enemy_name: str):
+        self.experience += self.enemies[enemy_name]["experience"]
+        drop = random.choice(self.enemies[enemy_name]["drop"])
+        if drop not in self.inventory.keys():
+            self.inventory[drop] = 0
+        self.inventory[drop] += 1
+
+    def beat_enemy(self, enemy_name: str) -> str:
         self.enemies[enemy_name]["hp"] -= self.damage
         if self.enemies[enemy_name]["hp"] <= 0:
-            self.experience += self.enemies[enemy_name]["experience"]
+            self.get_drop_from_enemy(enemy_name)
             del self.enemies[enemy_name]
             return f"You killed a {enemy_name}. You have gained {NPC_DATA[enemy_name]['experience']} experience\n"
         return f"You attacked a {enemy_name}, {enemy_name} took {self.damage} damage. " \
@@ -93,8 +115,8 @@ class Player:
 
     def action_attack(self, action: str) -> str:
         answer = ""
-        self.check_enemy(ACTIONS[action]["enemy"])
-        answer += self.beat_enemy(ACTIONS[action]["enemy"])
+        self.check_enemy(ACTIONS[action]["enemy_name"])
+        answer += self.beat_enemy(ACTIONS[action]["enemy_name"])
         answer += self.get_enemies_damage()
         if self.is_dead():
             answer += self.dead_script()

@@ -47,3 +47,13 @@ def execute_action(action: str, identification_number: int, login: str, name: st
 def get_action_buttons(identification_number: int) -> list[str]:
     player = create_exist_player(identification_number)
     return player.get_action_buttons()
+
+
+def get_player_info(identification_number: int, login: str, name: str) -> str:
+    player = except_new_player(identification_number, login, name)
+    return player.info()
+
+
+def get_player_inventory_info(identification_number: int, login: str, name: str) -> str:
+    player = except_new_player(identification_number, login, name)
+    return player.inventory_info()
