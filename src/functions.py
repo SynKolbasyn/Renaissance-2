@@ -16,7 +16,9 @@ ITEMS = get_dict_from_json("../game_data/items.json")
 
 
 def create_new_player(identification_number: int, login: str, name: str) -> player_account.Player:
-    return player_account.Player(identification_number, login, name, "Forest", [], 100, 1, 0, {}, {})
+    player = player_account.Player(identification_number, login, name, "Forest", [], 100, 1, 0, {}, {})
+    player.update_data()
+    return player
 
 
 def create_exist_player(identification_number: int) -> player_account.Player:

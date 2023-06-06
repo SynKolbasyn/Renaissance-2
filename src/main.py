@@ -27,7 +27,8 @@ async def start(message: aiogram.types.Message):
     keyboard.add(*functions.get_action_buttons(message.from_user.id))
     await message.answer(f"Hello {message.from_user.first_name}. "
                          f"Welcome to Renaissance 2, here you can do whatever you want, "
-                         f"and your path is determined only by you. What are you waiting for, let's go!")
+                         f"and your path is determined only by you. What are you waiting for, let's go!",
+                         reply_markup=keyboard)
 
 
 @dp.message_handler(commands="info")
