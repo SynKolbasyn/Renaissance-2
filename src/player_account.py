@@ -8,13 +8,14 @@ def get_dict_from_json(file_name: str) -> dict:
 
 
 LOCATIONS = get_dict_from_json("../game_data/locations.json")
+STATUSES = get_dict_from_json("../game_data/statuses.json")
 ACTIONS = get_dict_from_json("../game_data/actions.json")
 NPC_DATA = get_dict_from_json("../game_data/npc_data.json")
 ITEMS = get_dict_from_json("../game_data/items.json")
 
 
 class Player:
-    def __init__(self, identification_number: int, login: str, name: str, location: str, previous_locations: list,
+    def __init__(self, identification_number: int, login: str, name: str, location: dict, previous_locations: list,
                  hp: int, damage: int, experience: int, enemies: dict, inventory: dict):
         self.identification_number = identification_number
         self.login = login
@@ -44,7 +45,8 @@ class Player:
     def info(self) -> str:
         return f"ID: {self.identification_number}\n" \
                f"Name: {self.name}\n" \
-               f"Location: {self.location}\n" \
+               f"Location: {self.location['location']}\n" \
+               f"Status: {self.location['status']}\n" \
                f"HP: {self.hp}\n" \
                f"Damage: {self.damage}\n" \
                f"Experience: {self.experience}"
@@ -59,14 +61,14 @@ class Player:
         with open(f"../players_data_base/{self.identification_number}.json", "w") as file:
             file.write(ujson.dumps(self.get_dict_format_data(), indent=2))
 
-    def check_location(self, location: str) -> bool:
+    def check_location(self, location: dict) -> bool:
         return location == self.location
 
     def action_movement(self, action: str) -> str:
         if action == "Leave":
             self.location = self.previous_locations[-1]
             self.previous_locations.pop(-1)
-            return ACTIONS[action]["description"] + self.location
+            return ACTIONS[action]["description"]
         if self.check_location(ACTIONS[action]["location_arrive"]):
             return "You are already here or you can't go there"
         self.previous_locations.append(self.location)
@@ -105,7 +107,7 @@ class Player:
         return self.hp <= 0
 
     def dead_script(self) -> str:
-        self.location = "Forest"
+        self.location = {"location": "Forest", "status": "Stay"}
         self.previous_locations = []
         self.hp = 100
         self.damage = 1
@@ -132,4 +134,6 @@ class Player:
         return answer
 
     def get_action_buttons(self) -> list[str]:
-        return LOCATIONS[self.location]["actions"]
+        if STATUSES[self.location["status"]]["type"] == "new actions":
+            return STATUSES[self.location["status"]]["actions"]
+        return LOCATIONS[self.location["location"]]["actions"]
