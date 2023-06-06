@@ -11,17 +11,20 @@ def get_dict_from_json(file_name: str) -> dict:
 
 LOCATIONS = get_dict_from_json("../game_data/locations.json")
 ACTIONS = get_dict_from_json("../game_data/actions.json")
+NPC_DATA = get_dict_from_json("../game_data/npc_data.json")
+ITEMS = get_dict_from_json("../game_data/items.json")
 
 
 def create_new_player(identification_number: int, login: str, name: str) -> player_account.Player:
-    return player_account.Player(identification_number, login, name, "Forest", [], 100, 1)
+    return player_account.Player(identification_number, login, name, "Forest", [], 100, 1, 0, {}, {})
 
 
 def create_exist_player(identification_number: int) -> player_account.Player:
     player_data = get_dict_from_json(f"../players_data_base/{identification_number}.json")
     return player_account.Player(identification_number, player_data["login"], player_data["name"],
                                  player_data["location"], player_data["previous_locations"], player_data["hp"],
-                                 player_data["damage"])
+                                 player_data["damage"], player_data["experience"], player_data["enemies"],
+                                 player_data["inventory"])
 
 
 def except_new_player(identification_number: int, login: str, name: str) -> player_account.Player:
