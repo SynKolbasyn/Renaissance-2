@@ -4,7 +4,8 @@ import os
 
 import functions
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.INFO, filename="../logs.log", filemode="w",
+                    format="%(asctime)s %(levelname)s %(message)s")
 
 bot = aiogram.Bot(token=os.getenv("BOT_TOKEN"))
 dp = aiogram.Dispatcher(bot)
@@ -22,6 +23,7 @@ async def setup_bot_commands(dispatcher):
 
 @dp.message_handler(commands=["start", "help"])
 async def start(message: aiogram.types.Message):
+    logging.info(f"Text: {message.text} | ID: {message.from_user.id} | User: {message.from_user.username}")
     functions.except_new_player(message.from_user.id, message.from_user.username, message.from_user.first_name)
     keyboard = aiogram.types.ReplyKeyboardMarkup(resize_keyboard=True)
     keyboard.add(*functions.get_action_buttons(message.from_user.id))
@@ -33,6 +35,7 @@ async def start(message: aiogram.types.Message):
 
 @dp.message_handler(commands="info")
 async def info(message: aiogram.types.Message):
+    logging.info(f"Text: {message.text} | ID: {message.from_user.id} | User: {message.from_user.username}")
     answer = functions.get_player_info(message.from_user.id, message.from_user.username, message.from_user.first_name)
     keyboard = aiogram.types.ReplyKeyboardMarkup(resize_keyboard=True)
     keyboard.add(*functions.get_action_buttons(message.from_user.id))
@@ -41,6 +44,7 @@ async def info(message: aiogram.types.Message):
 
 @dp.message_handler(commands="inventory")
 async def info(message: aiogram.types.Message):
+    logging.info(f"Text: {message.text} | ID: {message.from_user.id} | User: {message.from_user.username}")
     answer = functions.get_player_inventory_info(message.from_user.id, message.from_user.username,
                                                  message.from_user.first_name)
     keyboard = aiogram.types.ReplyKeyboardMarkup(resize_keyboard=True)
@@ -50,6 +54,7 @@ async def info(message: aiogram.types.Message):
 
 @dp.message_handler()
 async def main(message: aiogram.types.Message):
+    logging.info(f"Text: {message.text} | ID: {message.from_user.id} | User: {message.from_user.username}")
     answer = functions.execute_action(message.text, message.from_user.id, message.from_user.username,
                                       message.from_user.first_name)
     keyboard = aiogram.types.ReplyKeyboardMarkup(resize_keyboard=True)
